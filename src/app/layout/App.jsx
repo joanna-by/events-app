@@ -1,12 +1,14 @@
-import React from 'react';
+import React from "react";
+import EventDashboard from "../../features/event/eventDashboard/EventDashboard";
+import NavBar from "../../features/event/nav/navBar/NavBar";
 
 function App() {
   return (
     <div className="App">
-      <h1>Events-app</h1>
+      <NavBar />
+      <EventDashboard />
     </div>
   );
 }
-
 
 export default App;
