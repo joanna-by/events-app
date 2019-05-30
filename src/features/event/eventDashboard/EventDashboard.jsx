@@ -1,72 +1,22 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import { Grid, Button } from "semantic-ui-react";
 import EventList from "../eventList/EventList";
 import EventForm from "../eventForm/EventForm";
+import { createEvent, updateEvent, deleteEvent } from "../eventActions";
 
-const eventsDashboard = [
-  {
-    id: "1",
-    title: "Trip to the Solidarity Museum",
-    date: "2019-06-27",
-    category: "culture",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus.",
-    city: "Gdańsk, Poland",
-    venue: "Solidarity Museum, Stoczniowa, Gdańsk",
-    hostedBy: "Kuba",
-    hostPhotoURL: "https://randomuser.me/api/portraits/men/32.jpg",
-    attendees: [
-      {
-        id: "a",
-        name: "Zbychu",
-        photoURL: "https://randomuser.me/api/portraits/men/5.jpg"
-      },
-      {
-        id: "b",
-        name: "Ania",
-        photoURL: "https://randomuser.me/api/portraits/women/17.jpg"
-      },
-      {
-        id: "c",
-        name: "Ala",
-        photoURL: "https://randomuser.me/api/portraits/men/15.jpg"
-      }
-    ]
-  },
-  {
-    id: "2",
-    title: "Evening in the Irish Pub",
-    date: "2019-06-28",
-    category: "drinks",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus.",
-    city: "Gdańsk, Poland",
-    venue: "Irish Pub, Piwna, Gdańsk",
-    hostedBy: "Zuza",
-    hostPhotoURL: "https://randomuser.me/api/portraits/women/31.jpg",
-    attendees: [
-      {
-        id: "b",
-        name: "Ala",
-        photoURL: "https://randomuser.me/api/portraits/women/15.jpg"
-      },
-      {
-        id: "a",
-        name: "Bartek",
-        photoURL: "https://randomuser.me/api/portraits/men/27.jpg"
-      },
-      {
-        id: "c",
-        name: "Aniela",
-        photoURL: "https://randomuser.me/api/portraits/women/43.jpg"
-      }
-    ]
-  }
-];
+const mapState = state => ({
+  events: state.events
+});
+
+const actions = {
+  createEvent,
+  deleteEvent,
+  updateEvent
+}
 
 class EventDashboard extends Component {
   state = {
-    events: eventsDashboard,
     isOpen: false,
     selectedEvent: null
   };
@@ -85,14 +35,8 @@ class EventDashboard extends Component {
   };
 
   handleUpdateEvent = updatedEvent => {
+    this.props.updateEvent(updatedEvent)
     this.setState({
-      events: this.state.events.map(event => {
-        if (event.id === updatedEvent.id) {
-          return Object.assign({}, updatedEvent);
-        } else {
-          return event;
-        }
-      }),
       isOpen: false,
       selectedEvent: null
     });
@@ -108,29 +52,26 @@ class EventDashboard extends Component {
   handleCreateEvent = newEvent => {
     newEvent.id = Math.random();
     newEvent.hostPhotoURL = "/assets/user.png";
-    const updatedEvents = [...this.state.events, newEvent];
+    this.props.createEvent(newEvent)
     this.setState({
-      events: updatedEvents,
       isOpen: false
     });
   };
 
   handleDeleteEvent = eventId => () => {
-    const updatedEvents = this.state.events.filter(e => e.id !== eventId);
-    this.setState({
-      events: updatedEvents
-    });
+    this.props.deleteEvent(eventId)
   };
 
   render() {
     const { selectedEvent } = this.state;
+    const { events } = this.props;
     return (
       <Grid>
         <Grid.Column width={10}>
           <EventList
             deleteEvent={this.handleDeleteEvent}
             onEventOpen={this.handleOpenEvent}
-            events={this.state.events}
+            events={events}
           />
         </Grid.Column>
         <Grid.Column width={6}>
@@ -155,4 +96,4 @@ class EventDashboard extends Component {
   }
 }
 
-export default EventDashboard;
+export default connect(mapState, actions)(EventDashboard);
